@@ -89,7 +89,7 @@ export default function MapView({
     map.setView([home.lat, home.lng], 14);
   }, [home]);
 
-  // Update markers when filtered data changes
+  // Update markers when filtered data changes (shows activities and restaurants together)
   useEffect(() => {
     const map = mapRef.current;
     if (!map || typeof L === "undefined") return;
@@ -98,10 +98,13 @@ export default function MapView({
     markersRef.current.forEach((m) => map.removeLayer(m));
     markersRef.current = [];
 
-    const activeList = activeTab === "activities" ? activities : restaurants;
+    const combinedList: { item: Activity | Restaurant; isRestaurant: boolean }[] = [
+      ...restaurants.map((item) => ({ item, isRestaurant: true })),
+      ...activities.map((item) => ({ item, isRestaurant: false })),
+    ];
     const bounds: any[] = [[home.lat, home.lng]];
 
-    activeList.forEach((item) => {
+    combinedList.forEach(({ item, isRestaurant }) => {
       if (item.lat === null || item.lng === null) return;
 
       const lat = item.lat;
@@ -109,7 +112,6 @@ export default function MapView({
       bounds.push([lat, lng]);
 
       // Define pin styling based on category or type
-      const isRestaurant = activeTab === "restaurants";
       const color = isRestaurant ? "#0096a0" : "#725ac1";
       const iconEmoji = isRestaurant ? "🍔" : "🎡";
 
@@ -187,7 +189,7 @@ export default function MapView({
     if (bounds.length > 1) {
       map.fitBounds(bounds, { padding: [50, 50] });
     }
-  }, [activities, restaurants, activeTab, home]);
+  }, [activities, restaurants, home]);
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
@@ -198,10 +200,10 @@ export default function MapView({
             <MapPin size={20} className="text-[#f4a261]" />
             <div>
               <h2 className="text-xl font-heading font-bold">
-                Map View: {activeTab === "activities" ? "Activities" : "Restaurants"}
+                Map View: All Locations
               </h2>
               <p className="text-xs text-white/70">
-                Showing {activeTab === "activities" ? activities.length : restaurants.length} pins relative to your Home Base
+                Showing {activities.length} activities &amp; {restaurants.length} restaurants relative to your Home Base
               </p>
             </div>
           </div>
