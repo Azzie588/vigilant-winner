@@ -1,4 +1,4 @@
-import { MapPin, Phone, Clock, Globe, BookOpen } from "lucide-react";
+import { MapPin, Phone, Globe, BookOpen } from "lucide-react";
 import { Activity, Restaurant } from "../types";
 import { formatDistance, getWebsiteUrl } from "../utils/distance";
 
@@ -70,17 +70,6 @@ export default function EasyRead({
                         </p>
                       </div>
                     </div>
-
-                    {/* Hours */}
-                    {r.hours && (
-                      <div className="flex gap-4">
-                        <Clock size={26} className="shrink-0 text-[#0096a0] mt-0.5" />
-                        <div>
-                          <p className="text-sm font-bold uppercase tracking-wider text-[#5e7e8a] mb-0.5">Hours</p>
-                          <p className="text-lg sm:text-xl font-bold text-[#1b3a4b] leading-snug">{r.hours}</p>
-                        </div>
-                      </div>
-                    )}
 
                     {/* Notes */}
                     {r.notes && (
@@ -188,17 +177,6 @@ export default function EasyRead({
                         <div>
                           <p className="text-sm font-bold uppercase tracking-wider text-[#5e7e8a] mb-0.5">Public Transport</p>
                           <p className="text-lg font-bold text-[#1b3a4b] leading-snug">{a.transitDetail}</p>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Hours */}
-                    {a.hours && (
-                      <div className="flex gap-4">
-                        <Clock size={26} className="shrink-0 text-[#725ac1] mt-0.5" />
-                        <div>
-                          <p className="text-sm font-bold uppercase tracking-wider text-[#5e7e8a] mb-0.5">Hours</p>
-                          <p className="text-lg sm:text-xl font-bold text-[#1b3a4b] leading-snug">{a.hours}</p>
                         </div>
                       </div>
                     )}

@@ -8,7 +8,7 @@ export interface Activity {
   what: string;
   reachableByTransit: boolean;
   category: string;
-  hours: string;
+  setting: "indoor" | "outdoor" | "both";
   notes: string;
   url: string;
   lat: number | null;
@@ -28,10 +28,8 @@ export interface Restaurant {
   level: string;
   foodType: string;
   filterLevel: string;
-  beenBefore: boolean;
   reservations: string;
   view: string;
-  hours: string;
   notes: string;
   menu: string;
   sourceUrl: string;

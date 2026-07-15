@@ -26,6 +26,7 @@ import { getDistanceMiles, formatDistance, getWebsiteUrl } from "../utils/distan
 import EasyRead from "./EasyRead";
 import MapView from "./components/MapView";
 import MenuModal from "./components/MenuModal";
+import TransitBadge from "./components/TransitBadge";
 
 // Predefined Home preset options
 const HOME_PRESETS: HomeLocation[] = [
@@ -71,7 +72,6 @@ export default function App() {
   const [restDistanceCat, setRestDistanceCat] = useState("All");
   const [restFoodType, setRestFoodType] = useState("All");
   const [restExpenseLevel, setRestExpenseLevel] = useState("All");
-  const [restBeenBefore, setRestBeenBefore] = useState("All"); // "All" | "Yes" | "No"
   const [restReservations, setRestReservations] = useState("All"); // "All" | "Yes" | "No"
   const [restView, setRestView] = useState("All"); // "All" | "Waterfront" | "Seaside" etc
 
@@ -91,7 +91,6 @@ export default function App() {
     setRestDistanceCat("All");
     setRestFoodType("All");
     setRestExpenseLevel("All");
-    setRestBeenBefore("All");
     setRestReservations("All");
     setRestView("All");
   }
@@ -214,12 +213,6 @@ export default function App() {
       list = list.filter((r) => (r.filterLevel || r.level) === restExpenseLevel);
     }
 
-    if (restBeenBefore === "Yes") {
-      list = list.filter((r) => r.beenBefore);
-    } else if (restBeenBefore === "No") {
-      list = list.filter((r) => !r.beenBefore);
-    }
-
     if (restReservations === "Yes") {
       list = list.filter((r) => r.reservations && r.reservations !== "");
     } else if (restReservations === "No") {
@@ -258,7 +251,7 @@ export default function App() {
     }
 
     return list;
-  }, [restaurantsWithDist, search, restDistanceCat, restFoodType, restExpenseLevel, restBeenBefore, restReservations, restView, sortCol, sortDir]);
+  }, [restaurantsWithDist, search, restDistanceCat, restFoodType, restExpenseLevel, restReservations, restView, sortCol, sortDir]);
 
   function handleSort(col: string) {
     if (sortCol === col) {
@@ -276,7 +269,6 @@ export default function App() {
     setRestDistanceCat("All");
     setRestFoodType("All");
     setRestExpenseLevel("All");
-    setRestBeenBefore("All");
     setRestReservations("All");
     setRestView("All");
   }
@@ -288,7 +280,6 @@ export default function App() {
     restDistanceCat !== "All" ||
     restFoodType !== "All" ||
     restExpenseLevel !== "All" ||
-    restBeenBefore !== "All" ||
     restReservations !== "All" ||
     restView !== "All";
 
@@ -494,17 +485,6 @@ export default function App() {
                   ))}
                 </select>
 
-                {/* Been Before? checkboxes/dropdown */}
-                <select
-                  value={restBeenBefore}
-                  onChange={(e) => setRestBeenBefore(e.target.value)}
-                  className="text-xs font-bold rounded-full border border-[rgba(0,120,140,0.3)] bg-white text-[#1b3a4b] px-3.5 py-2 focus:outline-none focus:ring-2 focus:ring-[#0096a0]"
-                >
-                  <option value="All">Been Before (All)</option>
-                  <option value="Yes">Been Before: Yes</option>
-                  <option value="No">Been Before: No</option>
-                </select>
-
                 {/* Reservations dropdown */}
                 <select
                   value={restReservations}
@@ -581,13 +561,13 @@ export default function App() {
                     <th onClick={() => handleSort("distance")} className={thClass}>
                       Distance <SortIcon col="distance" sortCol={sortCol} sortDir={sortDir} />
                     </th>
-                    <th className={thClass}>Public Transportation Detail</th>
+                    <th className={thClass}>Transit</th>
                     <th className={thClass}>What</th>
                     <th className={thClass}>Reachable?</th>
                     <th onClick={() => handleSort("category")} className={thClass}>
                       Category <SortIcon col="category" sortCol={sortCol} sortDir={sortDir} />
                     </th>
-                    <th className={thClass}>Hours</th>
+                    <th className={thClass}>Setting</th>
                     <th className={thClass}>Notes</th>
                     <th className={thClass}>Website</th>
                   </tr>
@@ -616,7 +596,9 @@ export default function App() {
                           <td className={`${tdClass} font-mono font-bold text-[#0077b6]`}>
                             <span title={`Calculated: ${displayDist} (Original: ${a.distance})`}>{displayDist}</span>
                           </td>
-                          <td className={`${tdClass} text-xs max-w-[180px]`}>{a.transitDetail}</td>
+                          <td className={tdClass}>
+                            {a.reachableByTransit ? <TransitBadge detail={a.transitDetail} /> : null}
+                          </td>
                           <td className={`${tdClass} max-w-[200px]`}>{a.what}</td>
                           <td className={tdClass}>
                             {a.reachableByTransit ? (
@@ -634,7 +616,9 @@ export default function App() {
                               {a.category}
                             </span>
                           </td>
-                          <td className={`${tdClass} font-mono text-[11px] whitespace-pre-line`}>{a.hours}</td>
+                          <td className={tdClass}>
+                            <span className="text-xs font-bold text-[#5e7e8a] capitalize">{a.setting}</span>
+                          </td>
                           <td className={`${tdClass} text-xs max-w-[240px]`}>{a.notes}</td>
                           <td className={tdClass}>
                             {a.url ? (
@@ -671,10 +655,8 @@ export default function App() {
                     <th onClick={() => handleSort("level")} className={thClass}>
                       Level <SortIcon col="level" sortCol={sortCol} sortDir={sortDir} />
                     </th>
-                    <th className={thClass}>Been Before?</th>
                     <th className={thClass}>Reservations?</th>
                     <th className={thClass}>View</th>
-                    <th className={thClass}>Hours</th>
                     <th className={thClass}>Notes</th>
                     <th className={thClass}>Menu</th>
                     <th className={thClass}>Website</th>
@@ -683,7 +665,7 @@ export default function App() {
                 <tbody>
                   {filteredRestaurants.length === 0 ? (
                     <tr>
-                      <td colSpan={12} className="px-3 py-16 text-center text-[#5e7e8a] font-bold">
+                      <td colSpan={10} className="px-3 py-16 text-center text-[#5e7e8a] font-bold">
                         🏖️ No restaurants match your search.
                       </td>
                     </tr>
@@ -710,20 +692,8 @@ export default function App() {
                               {r.filterLevel || r.level}
                             </span>
                           </td>
-                          <td className={tdClass}>
-                            {r.beenBefore ? (
-                              <span className="inline-flex items-center gap-0.5 text-xs font-bold text-[#0096a0] bg-[#d4eeef] px-2 py-0.5 rounded-full">
-                                Yes
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center gap-0.5 text-xs font-bold text-[#5e7e8a] bg-gray-100 px-2 py-0.5 rounded-full">
-                                No
-                              </span>
-                            )}
-                          </td>
                           <td className={tdClass}>{r.reservations || <span className="text-gray-300">-</span>}</td>
                           <td className={`${tdClass} text-xs`}>{r.view || <span className="text-gray-300">-</span>}</td>
-                          <td className={`${tdClass} font-mono text-[11px] whitespace-pre-line`}>{r.hours || "-"}</td>
                           <td className={`${tdClass} text-xs max-w-[200px]`}>{r.notes}</td>
                           <td className={tdClass}>
                             {r.menu ? (
