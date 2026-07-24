@@ -878,5 +878,21 @@
     "url": "https://fenwickfun.com",
     "lat": 38.452577,
     "lng": -75.052719
+  },
+  {
+    "id": 56,
+    "name": "Paradise Watersports",
+    "address": "12913 Ocean Gateway, Ocean City, MD",
+    "distance": "7.0 mi",
+    "distanceVal": 6.0,
+    "what": "Boat Tours / Boat & Jet Ski Rentals / Parasailing",
+    "category": "Amusement Parks",
+    "setting": "outdoor",
+    "reachableByTransit": true,
+    "transitDetail": "Take the Beach Bus southbound to the inlet. Transfer to the West Ocean City Park & Ride Shuttle west to the Outlets Ocean City or West Ocean City Park & Ride stop. Short walk along Ocean Gateway. 
+    "notes": "Check-in on docks at Hooper's Crab House",
+    "url": "https://www.paradise-watersports.com/",
+    "lat": ,
+    "lng": 
   }
 ]
