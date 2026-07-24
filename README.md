@@ -1,3 +1,4 @@
+
 # Beach Breakdown 🏖️
  
 A small React app for quickly deciding where to eat and what to do in Ocean City, MD — built for family vacation planning when everyone's arguing about dinner and nobody wants to scroll through fifty tabs to figure it out.
@@ -41,9 +42,60 @@ The app is deployed via **Cloudflare Pages**:
 - **Build output directory:** `dist`
 It's a client-side React app, so client-side routing (page refreshes and direct URLs) needs to fall back to `index.html` — configure this in your Cloudflare Pages project settings (or a `_redirects` file with `/* /index.html 200`, Cloudflare Pages supports the same syntax Netlify uses).
  
-### Adding menus
+### Updating the data
  
-Restaurant menu links open straight from the app. If you want to host menu PDFs or images locally instead of linking out, drop them in `public/menus/` and reference the file names in the restaurant data so they get published with the site.
+Restaurants and activities are both plain JSON files, not a database — editing them is just editing a file and committing.
+ 
+**Restaurants** live in `src/data/restaurants.json`. Each entry looks like:
+ 
+```json
+{
+  "id": 71,
+  "restaurant": "Name of the Place",
+  "address": "123 Coastal Hwy",
+  "distance": "1.2 mi",
+  "distanceCategory": "Drive",
+  "websiteUrl": "https://example.com",
+  "generalType": "Seafood / American",
+  "level": "Casual",
+  "foodType": "Other",
+  "filterLevel": "Casual",
+  "reservations": "Don't accept reservations",
+  "view": "",
+  "notes": "A short description of the place.",
+  "menu": "https://example.com/menu",
+  "sourceUrl": "https://example.com",
+  "lat": 38.4095,
+  "lng": -75.0617
+}
+```
+ 
+Give each new entry a unique `id`, and set `lat`/`lng` (needed for the map view and distance calculations) — you can grab coordinates from Google Maps by right-clicking a location and copying the numbers shown.
+ 
+**Adding menus:** Restaurant menu links open straight from the app when `menu` is a full URL. If you'd rather host a menu PDF or image locally instead of linking out, drop the file in `public/menus/` and set `menu` to just the file name (e.g. `"menu": "bull_menu.jpg"`) — the app detects local files automatically and opens them in a full-screen, zoomable overlay instead of a new tab.
+ 
+**Activities** live in `src/data/activities.json`, with a different shape:
+ 
+```json
+{
+  "id": 56,
+  "name": "Name of the Place",
+  "address": "123 Some St, Berlin",
+  "distance": "5.0 mi",
+  "distanceVal": 7.0,
+  "what": "Mini Golf",
+  "category": "Outdoor Amusements",
+  "setting": "outdoor",
+  "reachableByTransit": true,
+  "transitDetail": "Take the Beach Bus northbound",
+  "notes": "Anything worth knowing before you go.",
+  "url": "https://example.com",
+  "lat": 38.4095,
+  "lng": -75.0617
+}
+```
+ 
+Same idea: unique `id`, real `lat`/`lng` for the map, and `reachableByTransit` / `transitDetail` if you want it to show up correctly in the transit filter.
  
 ## Tech stack
  
@@ -59,4 +111,5 @@ Restaurant menu links open straight from the app. If you want to host menu PDFs 
 - Distance calculations assume the default home base; there's no dynamic "set your own starting point" yet.
 ## License
  
-No license file yet — treat this as "look but ask before reusing commercially." Feel free to fork it for your own trip-planning needs.
+No license file yet — treat this as "look but ask before reusing commercially." Feel free to fork it for your own trip-planning needs (and help me develop it to work in numerous locales).
+ 
