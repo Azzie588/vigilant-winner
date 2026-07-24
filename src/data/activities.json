@@ -889,10 +889,10 @@
     "category": "Amusement Parks",
     "setting": "outdoor",
     "reachableByTransit": true,
-    "transitDetail": "Take the Beach Bus southbound to the inlet. Transfer to the West Ocean City Park & Ride Shuttle west to the Outlets Ocean City or West Ocean City Park & Ride stop. Short walk along Ocean Gateway. 
+    "transitDetail": "Take the Beach Bus southbound to the inlet. Transfer to the West Ocean City Park & Ride Shuttle west to the Outlets Ocean City or West Ocean City Park & Ride stop. Short walk along Ocean Gateway.",
     "notes": "Check-in on docks at Hooper's Crab House",
     "url": "https://www.paradise-watersports.com/",
-    "lat": ,
-    "lng": 
+    "lat": 1,
+    "lng": 1
   }
 ]
