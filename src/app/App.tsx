@@ -14,7 +14,10 @@ import {
   Utensils,
   Footprints,
   Calendar,
-  Eye,
+  DollarSign,
+  Home as HomeIcon,
+  TreePine,
+  Tag,
   Map,
 } from "lucide-react";
 
@@ -27,6 +30,8 @@ import EasyRead from "./EasyRead";
 import MapView from "./components/MapView";
 import MenuModal from "./components/MenuModal";
 import TransitBadge from "./components/TransitBadge";
+import IconPopover from "./components/IconPopover";
+import { getCategoryIcon } from "./categoryIcons";
 
 // Predefined Home preset options
 const HOME_PRESETS: HomeLocation[] = [
@@ -302,6 +307,10 @@ export default function App() {
   // Styles utility classes
   const thClass =
     "px-3 py-3 text-left text-xs font-bold tracking-wider text-muted-foreground uppercase cursor-pointer select-none whitespace-nowrap hover:text-[#1b3a4b] transition-colors duration-150 border-b border-[rgba(0,120,140,0.15)]";
+  const thIconClass =
+    "px-3 py-3 text-center text-xs font-bold tracking-wider text-muted-foreground select-none whitespace-nowrap border-b border-[rgba(0,120,140,0.15)]";
+  const thIconSortableClass =
+    "px-3 py-3 text-center text-xs font-bold tracking-wider text-muted-foreground select-none whitespace-nowrap cursor-pointer hover:text-[#1b3a4b] transition-colors duration-150 border-b border-[rgba(0,120,140,0.15)]";
   const tdClass = "px-3 py-3.5 text-sm align-top leading-relaxed text-[#1b3a4b]";
 
   return (
@@ -561,13 +570,30 @@ export default function App() {
                     <th onClick={() => handleSort("distance")} className={thClass}>
                       Distance <SortIcon col="distance" sortCol={sortCol} sortDir={sortDir} />
                     </th>
-                    <th className={thClass}>Transit</th>
-                    <th className={thClass}>What</th>
-                    <th className={thClass}>Reachable?</th>
-                    <th onClick={() => handleSort("category")} className={thClass}>
-                      Category <SortIcon col="category" sortCol={sortCol} sortDir={sortDir} />
+                    <th className={thIconClass} title="Public transit">
+                      <Bus size={14} className="mx-auto" />
+                      <span className="sr-only">Transit</span>
                     </th>
-                    <th className={thClass}>Setting</th>
+                    <th className={thClass}>What</th>
+                    <th onClick={() => handleSort("category")} className={thIconSortableClass} title="Category">
+                      <span className="inline-flex items-center justify-center gap-0.5">
+                        <Tag size={14} />
+                        <SortIcon col="category" sortCol={sortCol} sortDir={sortDir} />
+                      </span>
+                      <span className="sr-only">Category</span>
+                    </th>
+                    <th className={thIconClass} title="Indoor / outdoor">
+                      <HomeIcon size={14} className="mx-auto" />
+                      <span className="sr-only">Setting</span>
+                    </th>
+                    <th className={thIconClass} title="Price">
+                      <DollarSign size={14} className="mx-auto" />
+                      <span className="sr-only">Price</span>
+                    </th>
+                    <th className={thIconClass} title="Schedule / hours">
+                      <Calendar size={14} className="mx-auto" />
+                      <span className="sr-only">Schedule</span>
+                    </th>
                     <th className={thClass}>Notes</th>
                     <th className={thClass}>Website</th>
                   </tr>
@@ -575,7 +601,7 @@ export default function App() {
                 <tbody>
                   {filteredActivities.length === 0 ? (
                     <tr>
-                      <td colSpan={10} className="px-3 py-16 text-center text-[#5e7e8a] font-bold">
+                      <td colSpan={11} className="px-3 py-16 text-center text-[#5e7e8a] font-bold">
                         🏖️ No activities match your search.
                       </td>
                     </tr>
@@ -597,27 +623,42 @@ export default function App() {
                             <span title={`Calculated: ${displayDist} (Original: ${a.distance})`}>{displayDist}</span>
                           </td>
                           <td className={tdClass}>
-                            {a.reachableByTransit ? <TransitBadge detail={a.transitDetail} /> : null}
+                            <TransitBadge detail={a.transitDetail} reachable={a.reachableByTransit} />
                           </td>
                           <td className={`${tdClass} max-w-[200px]`}>{a.what}</td>
                           <td className={tdClass}>
-                            {a.reachableByTransit ? (
-                              <span className="inline-flex items-center gap-0.5 text-xs font-bold text-[#0096a0] bg-[#d4eeef] px-2 py-0.5 rounded-full">
-                                Yes
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center gap-0.5 text-xs font-bold text-[#5e7e8a] bg-gray-100 px-2 py-0.5 rounded-full">
-                                No
-                              </span>
-                            )}
+                            <IconPopover
+                              icon={getCategoryIcon(a.category)}
+                              detail={a.category}
+                              ariaLabel="Category"
+                            />
                           </td>
                           <td className={tdClass}>
-                            <span className="text-xs font-bold px-2.5 py-0.5 bg-[#fdefc8] text-[#7a4f00] rounded-full border border-[#f4a261]/20">
-                              {a.category}
-                            </span>
+                            <IconPopover
+                              icon={a.setting === "indoor" ? <HomeIcon size={13} /> : a.setting === "outdoor" ? <TreePine size={13} /> : (
+                                <span className="inline-flex gap-0.5"><HomeIcon size={12} /><TreePine size={12} /></span>
+                              )}
+                              detail={a.setting === "both" ? "Indoor & outdoor" : a.setting === "indoor" ? "Indoor" : "Outdoor"}
+                              ariaLabel="Indoor or outdoor"
+                            />
                           </td>
                           <td className={tdClass}>
-                            <span className="text-xs font-bold text-[#5e7e8a] capitalize">{a.setting}</span>
+                            <IconPopover
+                              icon={<DollarSign size={13} />}
+                              detail={a.price}
+                              ariaLabel="Price"
+                              emptyLabel="Pricing not added yet"
+                              widthClass="w-56"
+                            />
+                          </td>
+                          <td className={tdClass}>
+                            <IconPopover
+                              icon={<Calendar size={13} />}
+                              detail={a.schedule}
+                              ariaLabel="Schedule"
+                              emptyLabel="Schedule not added yet"
+                              widthClass="w-56"
+                            />
                           </td>
                           <td className={`${tdClass} text-xs max-w-[240px]`}>{a.notes}</td>
                           <td className={tdClass}>

@@ -1,12 +1,21 @@
 import { useEffect, useRef, useState } from "react";
-import { Bus, Ban } from "lucide-react";
+import type { ReactNode } from "react";
 
-interface TransitBadgeProps {
-  detail: string;
-  reachable: boolean;
+interface IconPopoverProps {
+  icon: ReactNode;
+  detail?: string;
+  ariaLabel: string;
+  emptyLabel?: string; // tooltip shown when there's no detail yet
+  widthClass?: string;
 }
 
-export default function TransitBadge({ detail, reachable }: TransitBadgeProps) {
+export default function IconPopover({
+  icon,
+  detail,
+  ariaLabel,
+  emptyLabel = "Not added yet",
+  widthClass = "w-48",
+}: IconPopoverProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -21,15 +30,14 @@ export default function TransitBadge({ detail, reachable }: TransitBadgeProps) {
     return () => document.removeEventListener("mousedown", handleClick);
   }, [open]);
 
-  if (!reachable) {
+  if (!detail) {
     return (
       <span
-        className="relative inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 text-gray-400"
-        title="Not accessible by public transit"
-        aria-label="Not accessible by public transit"
+        className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 text-gray-300"
+        title={emptyLabel}
+        aria-label={`${ariaLabel}: ${emptyLabel}`}
       >
-        <Bus size={13} />
-        <Ban size={15} className="absolute -bottom-1 -right-1 text-gray-400 bg-white rounded-full" />
+        {icon}
       </span>
     );
   }
@@ -42,14 +50,16 @@ export default function TransitBadge({ detail, reachable }: TransitBadgeProps) {
           e.stopPropagation();
           setOpen((v) => !v);
         }}
-        aria-label="Show public transportation detail"
+        aria-label={ariaLabel}
         className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[#d4eeef] text-[#0096a0] hover:bg-[#c0e6e8] transition-colors active:scale-95"
       >
-        <Bus size={13} />
+        {icon}
       </button>
       {open && (
-        <div className="absolute z-20 left-1/2 -translate-x-1/2 mt-1.5 w-56 rounded-xl bg-white border border-[rgba(0,120,140,0.2)] shadow-lg px-3 py-2 text-xs text-[#1b3a4b] text-left whitespace-normal">
-          {detail || "No additional detail."}
+        <div
+          className={`absolute z-20 left-1/2 -translate-x-1/2 mt-1.5 ${widthClass} rounded-xl bg-white border border-[rgba(0,120,140,0.2)] shadow-lg px-3 py-2 text-xs text-[#1b3a4b] text-left whitespace-normal`}
+        >
+          {detail}
         </div>
       )}
     </div>

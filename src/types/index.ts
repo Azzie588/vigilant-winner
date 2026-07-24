@@ -9,6 +9,8 @@ export interface Activity {
   reachableByTransit: boolean;
   category: string;
   setting: "indoor" | "outdoor" | "both";
+  price?: string; // pricing summary shown in the price icon popover (omitted/empty if not yet researched)
+  schedule?: string; // hours/departure info shown in the schedule icon popover (omitted/empty if not yet researched)
   notes: string;
   url: string;
   lat: number | null;
