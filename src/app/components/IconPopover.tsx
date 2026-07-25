@@ -7,6 +7,7 @@ interface IconPopoverProps {
   ariaLabel: string;
   emptyLabel?: string; // tooltip shown when there's no detail yet
   widthClass?: string;
+  trigger?: "click" | "hover"; // how the popover is revealed; defaults to click
 }
 
 export default function IconPopover({
@@ -15,12 +16,13 @@ export default function IconPopover({
   ariaLabel,
   emptyLabel = "Not added yet",
   widthClass = "w-48",
+  trigger = "click",
 }: IconPopoverProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open || trigger === "hover") return;
     function handleClick(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) {
         setOpen(false);
@@ -28,7 +30,7 @@ export default function IconPopover({
     }
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
-  }, [open]);
+  }, [open, trigger]);
 
   if (!detail) {
     return (
@@ -43,12 +45,17 @@ export default function IconPopover({
   }
 
   return (
-    <div ref={ref} className="relative inline-block">
+    <div
+      ref={ref}
+      className="relative inline-block"
+      onMouseEnter={() => trigger === "hover" && setOpen(true)}
+      onMouseLeave={() => trigger === "hover" && setOpen(false)}
+    >
       <button
         type="button"
         onClick={(e) => {
           e.stopPropagation();
-          setOpen((v) => !v);
+          if (trigger === "click") setOpen((v) => !v);
         }}
         aria-label={ariaLabel}
         className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[#d4eeef] text-[#0096a0] hover:bg-[#c0e6e8] transition-colors active:scale-95"

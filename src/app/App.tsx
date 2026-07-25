@@ -631,6 +631,7 @@ export default function App() {
                               icon={getCategoryIcon(a.category)}
                               detail={a.category}
                               ariaLabel="Category"
+                              trigger="hover"
                             />
                           </td>
                           <td className={tdClass}>
